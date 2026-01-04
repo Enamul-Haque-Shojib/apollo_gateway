@@ -1,0 +1,13 @@
+subgraphs:
+  post_subgraph:
+    routing_url: https://apollo-post.onrender.com/graphql
+    schema:
+      file: ../post_subgraph/src/schema/post.graphql
+  user_subgraph:
+    routing_url: https://apollo-user.onrender.com/graphql
+    schema:
+      file: ../user_subgraph/src/schema/user.graphql
+  review_subgraph:
+    routing_url: http://localhost:4003/graphql
+    schema:
+      file: '../review_subgraph/src/schema/review.graphql'

@@ -1,0 +1,185 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+input CreatePostInput
+  @join__type(graph: POST_SUBGRAPH)
+{
+  title: String!
+  description: String!
+  status: PostStatus
+  userId: ID!
+}
+
+input CreateReviewInput
+  @join__type(graph: REVIEW_SUBGRAPH)
+{
+  comment: String!
+  rating: Int!
+  postId: ID!
+  userId: ID!
+}
+
+input CreateUserInput
+  @join__type(graph: USER_SUBGRAPH)
+{
+  name: String!
+  email: String!
+  password: String!
+  role: UserRole
+  contactNumber: String!
+}
+
+scalar join__DirectiveArguments
+
+scalar join__FieldSet
+
+enum join__Graph {
+  POST_SUBGRAPH @join__graph(name: "post_subgraph", url: "http://localhost:4002/graphql")
+  REVIEW_SUBGRAPH @join__graph(name: "review_subgraph", url: "http://localhost:4003/graphql")
+  USER_SUBGRAPH @join__graph(name: "user_subgraph", url: "http://localhost:4001/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Mutation
+  @join__type(graph: POST_SUBGRAPH)
+  @join__type(graph: REVIEW_SUBGRAPH)
+  @join__type(graph: USER_SUBGRAPH)
+{
+  createPost(input: CreatePostInput!): Post! @join__field(graph: POST_SUBGRAPH)
+  updatePost(id: ID!, input: UpdatePostInput!): Post! @join__field(graph: POST_SUBGRAPH)
+  deletePost(id: ID!): Boolean! @join__field(graph: POST_SUBGRAPH)
+  createReview(input: CreateReviewInput!): Review! @join__field(graph: REVIEW_SUBGRAPH)
+  updateReview(id: ID!, input: UpdateReviewInput!): Review! @join__field(graph: REVIEW_SUBGRAPH)
+  deleteReview(id: ID!): Boolean! @join__field(graph: REVIEW_SUBGRAPH)
+  createUser(input: CreateUserInput!): User! @join__field(graph: USER_SUBGRAPH)
+  updateUser(id: ID!, input: UpdateUserInput!): User! @join__field(graph: USER_SUBGRAPH)
+  deleteUser(id: ID!): Boolean! @join__field(graph: USER_SUBGRAPH)
+}
+
+type Post
+  @join__type(graph: POST_SUBGRAPH, key: "id")
+  @join__type(graph: REVIEW_SUBGRAPH, key: "id")
+{
+  id: ID!
+  title: String! @join__field(graph: POST_SUBGRAPH)
+  description: String! @join__field(graph: POST_SUBGRAPH)
+  status: PostStatus @join__field(graph: POST_SUBGRAPH)
+  userId: ID! @join__field(graph: POST_SUBGRAPH)
+  user: User @join__field(graph: POST_SUBGRAPH)
+  reviewsForPost: [Review]! @join__field(graph: REVIEW_SUBGRAPH)
+}
+
+enum PostStatus
+  @join__type(graph: POST_SUBGRAPH)
+{
+  DRAFT @join__enumValue(graph: POST_SUBGRAPH)
+  PUBLISHED @join__enumValue(graph: POST_SUBGRAPH)
+  ARCHIVED @join__enumValue(graph: POST_SUBGRAPH)
+}
+
+type Query
+  @join__type(graph: POST_SUBGRAPH)
+  @join__type(graph: REVIEW_SUBGRAPH)
+  @join__type(graph: USER_SUBGRAPH)
+{
+  posts: [Post!]! @join__field(graph: POST_SUBGRAPH)
+  post(id: ID!): Post @join__field(graph: POST_SUBGRAPH)
+  reviews: [Review!]! @join__field(graph: REVIEW_SUBGRAPH)
+  review(id: ID!): Review @join__field(graph: REVIEW_SUBGRAPH)
+  users: [User!]! @join__field(graph: USER_SUBGRAPH)
+  user(id: ID!): User @join__field(graph: USER_SUBGRAPH)
+}
+
+type Review
+  @join__type(graph: REVIEW_SUBGRAPH)
+{
+  id: ID!
+  comment: String!
+  rating: Int!
+  userId: ID!
+  postId: ID!
+  user: User
+  post: Post
+  isDelete: Boolean
+}
+
+input UpdatePostInput
+  @join__type(graph: POST_SUBGRAPH)
+{
+  title: String
+  description: String
+  status: PostStatus
+}
+
+input UpdateReviewInput
+  @join__type(graph: REVIEW_SUBGRAPH)
+{
+  comment: String
+  rating: Int
+}
+
+input UpdateUserInput
+  @join__type(graph: USER_SUBGRAPH)
+{
+  name: String
+  email: String
+  password: String
+  role: UserRole
+  contactNumber: String
+}
+
+type User
+  @join__type(graph: POST_SUBGRAPH, key: "id")
+  @join__type(graph: REVIEW_SUBGRAPH, key: "id")
+  @join__type(graph: USER_SUBGRAPH, key: "id")
+{
+  id: ID!
+  userPosts: [Post]! @join__field(graph: POST_SUBGRAPH)
+  reviewsByUser: [Review]! @join__field(graph: REVIEW_SUBGRAPH)
+  name: String! @join__field(graph: USER_SUBGRAPH)
+  email: String! @join__field(graph: USER_SUBGRAPH)
+  password: String! @join__field(graph: USER_SUBGRAPH)
+  role: UserRole! @join__field(graph: USER_SUBGRAPH)
+  contactNumber: String! @join__field(graph: USER_SUBGRAPH)
+}
+
+enum UserRole
+  @join__type(graph: USER_SUBGRAPH)
+{
+  ADMIN @join__enumValue(graph: USER_SUBGRAPH)
+  USER @join__enumValue(graph: USER_SUBGRAPH)
+}
