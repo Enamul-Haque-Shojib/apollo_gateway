@@ -120,7 +120,7 @@ import { RemoteGraphQLDataSource } from "@apollo/gateway";
 import { ApolloServer } from '@apollo/server';
 import { ApolloGateway } from '@apollo/gateway';
 import { AuthUser, verifyToken } from "./auth/verifyToken";
-import gql from "graphql-tag";
+// import gql from "graphql-tag";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { readFileSync } from "fs";

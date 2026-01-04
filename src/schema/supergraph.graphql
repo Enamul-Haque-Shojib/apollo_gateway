@@ -55,9 +55,9 @@ scalar join__DirectiveArguments
 scalar join__FieldSet
 
 enum join__Graph {
-  POST_SUBGRAPH @join__graph(name: "post_subgraph", url: "http://localhost:4002/graphql")
-  REVIEW_SUBGRAPH @join__graph(name: "review_subgraph", url: "http://localhost:4003/graphql")
-  USER_SUBGRAPH @join__graph(name: "user_subgraph", url: "http://localhost:4001/graphql")
+  POST_SUBGRAPH @join__graph(name: "post_subgraph", url: "https://apollo-post.onrender.com/graphql")
+  REVIEW_SUBGRAPH @join__graph(name: "review_subgraph", url: "https://apollo-review.onrender.com/graphql")
+  USER_SUBGRAPH @join__graph(name: "user_subgraph", url: "https://apollo-user.onrender.com/graphql")
 }
 
 scalar link__Import
