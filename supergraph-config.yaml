@@ -8,6 +8,6 @@ subgraphs:
     schema:
       file: ../user_subgraph/src/schema/user.graphql
   review_subgraph:
-    routing_url: http://localhost:4003/graphql
+    routing_url: https://apollo-review.onrender.com/graphql
     schema:
       file: '../review_subgraph/src/schema/review.graphql'
